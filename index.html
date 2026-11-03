@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FINZO - Toma el control de tu dinero sin ceder tus datos</title>
+<meta name="description" content="App web gratuita de finanzas personales. Sin nube, sin registro, sin ceder tus datos. 100% privada, 100% tuya.">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FAFAFC; --surface: #FFFFFF; --surface2: #F5F6FA; --border: #E5E7EB;
+  --accent: #7c6af7; --accent2: #4fd1c5; --accent-dark: #5b52d6;
+  --green: #10b981; --red: #ef4444; --yellow: #f59e0b;
+  --text: #1A1A2E; --text-soft: #4B4B6B; --muted: #8B8BA7;
+  --gradient: linear-gradient(135deg, #7c6af7 0%, #4fd1c5 100%);
+  --gradient-soft: linear-gradient(135deg, rgba(124,106,247,.08), rgba(79,209,197,.05));
+  --shadow-sm: 0 2px 8px rgba(17, 17, 46, 0.04);
+  --shadow: 0 4px 24px rgba(17, 17, 46, 0.06);
+  --shadow-lg: 0 20px 60px rgba(17, 17, 46, 0.08);
+  --shadow-xl: 0 30px 80px rgba(124, 106, 247, 0.15);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Inter', -apple-system, sans-serif;
+  overflow-x: hidden; line-height: 1.6; -webkit-font-smoothing: antialiased;
+}
+
+.navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(250,250,252,.85); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border); padding: 16px 0;
+}
+.nav-container {
+  max-width: 1200px; margin: 0 auto; padding: 0 24px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.logo {
+  font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800;
+  background: var(--gradient); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+  letter-spacing: 0.5px;
+}
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a {
+  color: var(--text-soft); text-decoration: none; font-size: 14px;
+  font-weight: 500; transition: color .2s;
+}
+.nav-links a:hover { color: var(--accent); }
+.btn {
+  background: var(--gradient); color: #fff; border: none;
+  padding: 12px 24px; border-radius: 10px; font-family: 'Inter', sans-serif;
+  font-size: 14px; cursor: pointer; font-weight: 600;
+  text-decoration: none; display: inline-block;
+  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 4px 16px rgba(124,106,247,.25);
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,106,247,.4); }
+.btn-ghost {
+  background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.btn-ghost:hover { background: var(--surface2); border-color: var(--accent); color: var(--accent); }
+.btn-lg { padding: 16px 32px; font-size: 15px; }
+.btn-xl { padding: 20px 40px; font-size: 16px; }
+.mobile-menu { display: none; background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; }
+
+.hero {
+  min-height: 100vh; display: flex; align-items: center;
+  padding: 120px 24px 80px; position: relative; overflow: hidden;
+  background: linear-gradient(180deg, #FAFAFC 0%, #FFFFFF 100%);
+}
+.hero::before {
+  content: ''; position: absolute; top: -300px; right: -200px;
+  width: 700px; height: 700px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(124,106,247,.12) 0%, transparent 70%);
+  animation: float 8s ease-in-out infinite;
+}
+.hero::after {
+  content: ''; position: absolute; bottom: -200px; left: -200px;
+  width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(79,209,197,.1) 0%, transparent 70%);
+  animation: float 10s ease-in-out infinite reverse;
+}
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-30px); } }
+.hero-container {
+  max-width: 1200px; margin: 0 auto; width: 100%;
+  display: grid; grid-template-columns: 1.1fr 1fr; gap: 60px; align-items: center;
+  position: relative; z-index: 1;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 10px 18px; border-radius: 100px; font-size: 12px;
+  color: var(--accent); margin-bottom: 24px;
+  letter-spacing: 0.5px; font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+.hero-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; box-shadow: 0 0 0 4px rgba(16,185,129,.2); }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+.hero h1 {
+  font-family: 'Syne', sans-serif; font-size: 60px; font-weight: 800;
+  line-height: 1.05; margin-bottom: 24px; letter-spacing: -1.5px;
+  color: var(--text);
+}
+.hero h1 .highlight {
+  background: var(--gradient); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-subtitle {
+  font-size: 18px; color: var(--text-soft); margin-bottom: 36px; max-width: 540px;
+  line-height: 1.6;
+}
+.hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 48px; }
+.hero-trust {
+  display: flex; gap: 32px; flex-wrap: wrap; padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+.trust-item { display: flex; align-items: center; gap: 10px; }
+.trust-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--gradient-soft); display: flex;
+  align-items: center; justify-content: center;
+  font-size: 18px; border: 1px solid rgba(124,106,247,.15);
+}
+.trust-text { font-size: 12px; color: var(--text-soft); }
+.trust-text strong { color: var(--text); display: block; font-size: 13px; font-weight: 600; }
+
+.hero-mockup {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 24px; padding: 28px; position: relative;
+  box-shadow: var(--shadow-xl);
+  animation: floatMockup 6s ease-in-out infinite;
+}
+@keyframes floatMockup { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-15px) rotate(1deg); } }
+.mockup-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border);
+}
+.mockup-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: var(--text); }
+.mockup-pills { display: flex; gap: 6px; }
+.mockup-pill { width: 10px; height: 10px; border-radius: 50%; }
+.mockup-pill.r { background: #ff5f57; }
+.mockup-pill.y { background: #febc2e; }
+.mockup-pill.g { background: #28c840; }
+.mockup-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.mockup-kpi {
+  background: var(--surface2); border-radius: 12px; padding: 16px;
+  border: 1px solid var(--border); position: relative; overflow: hidden;
+}
+.mockup-kpi::before {
+  content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+  background: var(--green);
+}
+.mockup-kpi.red::before { background: var(--red); }
+.mockup-kpi.cyan::before { background: var(--accent2); }
+.mockup-kpi.purple::before { background: var(--accent); }
+.mockup-kpi-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+.mockup-kpi-value { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; margin-top: 6px; color: var(--text); }
+.mockup-bars { display: flex; flex-direction: column; gap: 10px; }
+.mockup-bar-row { display: flex; align-items: center; gap: 12px; }
+.mockup-bar-label { font-size: 10px; color: var(--text-soft); min-width: 70px; font-weight: 500; }
+.mockup-bar { flex: 1; height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+.mockup-bar-fill { height: 100%; border-radius: 4px; }
+.mockup-bar-value { font-size: 10px; color: var(--text); font-weight: 600; min-width: 60px; text-align: right; }
+
+.section { padding: 100px 24px; position: relative; }
+.container { max-width: 1200px; margin: 0 auto; }
+.section-badge {
+  display: inline-block; padding: 8px 18px; border-radius: 100px;
+  background: var(--gradient-soft); border: 1px solid rgba(124,106,247,.2);
+  color: var(--accent); font-size: 12px; text-transform: uppercase;
+  letter-spacing: 1.5px; margin-bottom: 20px; font-weight: 600;
+}
+.section-title {
+  font-family: 'Syne', sans-serif; font-size: 44px; font-weight: 800;
+  line-height: 1.15; margin-bottom: 20px; letter-spacing: -1px; color: var(--text);
+}
+.section-title .accent {
+  background: var(--gradient); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+}
+.section-subtitle {
+  font-size: 18px; color: var(--text-soft); max-width: 720px; margin-bottom: 60px;
+  line-height: 1.6;
+}
+.section-header { text-align: center; max-width: 800px; margin: 0 auto 72px; }
+.section-header .section-subtitle { margin-left: auto; margin-right: auto; }
+
+.stats-section { background: var(--surface); padding: 60px 24px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.stats-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+.stat-item { text-align: center; }
+.stat-big {
+  font-family: 'Syne', sans-serif; font-size: 42px; font-weight: 800;
+  background: var(--gradient); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1; margin-bottom: 8px;
+}
+.stat-lbl { font-size: 13px; color: var(--text-soft); font-weight: 500; }
+
+.problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.problem-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 36px; transition: all .3s;
+  box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+}
+.problem-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); border-color: var(--red); }
+.problem-icon {
+  width: 60px; height: 60px; border-radius: 16px;
+  background: linear-gradient(135deg, rgba(239,68,68,.1), rgba(239,68,68,.05));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; margin-bottom: 20px;
+  border: 1px solid rgba(239,68,68,.15);
+}
+.problem-card h3 {
+  font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700;
+  margin-bottom: 14px; color: var(--text);
+}
+.problem-card p { color: var(--text-soft); font-size: 14px; line-height: 1.7; }
+.problem-stat {
+  display: inline-block; background: rgba(239,68,68,.08);
+  color: var(--red); padding: 6px 14px; border-radius: 100px;
+  font-size: 11px; font-weight: 700; margin-top: 16px;
+  border: 1px solid rgba(239,68,68,.15); letter-spacing: 0.5px;
+}
+
+.benefits-section { background: var(--surface2); }
+.benefits-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.benefit-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 36px 28px; transition: all .3s;
+  box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+}
+.benefit-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: var(--gradient);
+  transform: scaleX(0); transform-origin: left; transition: transform .4s;
+}
+.benefit-card:hover::before { transform: scaleX(1); }
+.benefit-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
+.benefit-icon-wrap {
+  width: 64px; height: 64px; border-radius: 16px;
+  background: var(--gradient-soft); display: flex;
+  align-items: center; justify-content: center;
+  font-size: 28px; margin-bottom: 24px;
+  border: 1px solid rgba(124,106,247,.15);
+}
+.benefit-card h3 {
+  font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700;
+  margin-bottom: 14px; color: var(--text);
+}
+.benefit-card p { color: var(--text-soft); font-size: 14px; line-height: 1.7; margin-bottom: 20px; }
+.benefit-list { list-style: none; padding: 0; }
+.benefit-list li {
+  padding: 8px 0; font-size: 13px; color: var(--text);
+  display: flex; align-items: center; gap: 10px;
+}
+.benefit-list li::before {
+  content: '✓'; color: var(--green); font-weight: bold;
+  font-size: 14px; background: rgba(16,185,129,.1);
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.steps-container {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+  position: relative;
+}
+.steps-container::before {
+  content: ''; position: absolute; top: 40px; left: 15%; right: 15%;
+  height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2));
+  opacity: .3; z-index: 0;
+}
+.step-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 40px 28px; text-align: center;
+  position: relative; z-index: 1; transition: all .3s;
+  box-shadow: var(--shadow-sm);
+}
+.step-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+.step-number {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--gradient); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800;
+  margin: 0 auto 24px; box-shadow: 0 10px 30px rgba(124,106,247,.4);
+}
+.step-card h3 {
+  font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700;
+  margin-bottom: 14px; color: var(--text);
+}
+.step-card p { color: var(--text-soft); font-size: 14px; line-height: 1.6; }
+
+.persona-section { background: var(--surface2); }
+.persona-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 24px; padding: 48px; display: grid;
+  grid-template-columns: 1fr 1.5fr; gap: 48px; align-items: center;
+  box-shadow: var(--shadow);
+}
+.persona-visual {
+  background: var(--gradient); border-radius: 20px;
+  padding: 48px 32px; text-align: center; color: #fff;
+  position: relative; overflow: hidden;
+}
+.persona-visual::before {
+  content: ''; position: absolute; top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,.15) 0%, transparent 60%);
+}
+.persona-avatar {
+  width: 110px; height: 110px; border-radius: 50%;
+  background: rgba(255,255,255,.25); margin: 0 auto 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 56px; backdrop-filter: blur(10px);
+  position: relative; z-index: 1; border: 3px solid rgba(255,255,255,.3);
+}
+.persona-visual h3 {
+  font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700;
+  position: relative; z-index: 1;
+}
+.persona-visual .age {
+  font-size: 14px; opacity: .95; margin-top: 6px;
+  position: relative; z-index: 1;
+}
+.persona-quote {
+  font-style: italic; margin-top: 24px; padding: 18px;
+  background: rgba(255,255,255,.15); border-radius: 12px;
+  font-size: 13px; position: relative; z-index: 1;
+  backdrop-filter: blur(10px); line-height: 1.6;
+}
+.persona-info h3 {
+  font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800;
+  margin-bottom: 8px; color: var(--text);
+}
+.persona-info .role { color: var(--accent); font-size: 15px; margin-bottom: 20px; font-weight: 600; }
+.persona-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 28px; }
+.persona-block {
+  background: var(--surface2); padding: 20px; border-radius: 14px;
+  border: 1px solid var(--border);
+}
+.persona-block h4 {
+  font-family: 'Syne', sans-serif; font-size: 12px; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--accent); margin-bottom: 10px; font-weight: 700;
+}
+.persona-block p { font-size: 13px; color: var(--text-soft); line-height: 1.6; }
+
+.compare-table {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; overflow: hidden; box-shadow: var(--shadow);
+}
+.compare-row {
+  display: grid; grid-template-columns: 1.5fr 1fr 1fr;
+  padding: 20px 28px; border-bottom: 1px solid var(--border);
+  align-items: center; transition: background .2s;
+}
+.compare-row:last-child { border-bottom: none; }
+.compare-row:hover { background: var(--surface2); }
+.compare-row.header {
+  background: var(--surface2); font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 15px;
+}
+.compare-feature { font-size: 14px; color: var(--text); font-weight: 500; }
+.compare-value { text-align: center; font-size: 14px; }
+.compare-finzo { color: var(--green); font-weight: 700; }
+.compare-other { color: var(--muted); }
+.compare-header-finzo {
+  color: var(--accent); background: var(--gradient-soft);
+  padding: 8px 14px; border-radius: 10px; text-align: center;
+  border: 1px solid rgba(124,106,247,.2); font-weight: 700;
+}
+.compare-header-other {
+  text-align: center; color: var(--muted);
+  padding: 8px 14px; font-weight: 600;
+}
+
+.plans-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.plan-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 36px 28px; position: relative;
+  transition: all .3s; box-shadow: var(--shadow-sm);
+}
+.plan-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
+.plan-card.featured {
+  border-color: var(--accent); border-width: 2px;
+  box-shadow: 0 20px 60px rgba(124,106,247,.15);
+  transform: scale(1.03);
+}
+.plan-card.featured::before {
+  content: '⭐ MÁS POPULAR'; position: absolute; top: -14px; left: 50%;
+  transform: translateX(-50%); background: var(--gradient); color: #fff;
+  padding: 6px 18px; border-radius: 100px; font-size: 10px;
+  font-weight: 700; letter-spacing: 1.5px;
+  white-space: nowrap; box-shadow: 0 8px 20px rgba(124,106,247,.3);
+}
+.plan-tag {
+  display: inline-block; font-size: 11px; letter-spacing: 1.5px;
+  color: var(--accent); text-transform: uppercase; margin-bottom: 14px;
+  font-weight: 700;
+}
+.plan-name {
+  font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700;
+  margin-bottom: 10px; color: var(--text);
+}
+.plan-desc { font-size: 13px; color: var(--text-soft); margin-bottom: 24px; min-height: 40px; }
+.plan-price {
+  font-family: 'Syne', sans-serif; font-size: 38px; font-weight: 800;
+  margin-bottom: 4px; color: var(--text);
+}
+.plan-price.free { color: var(--green); }
+.plan-period { font-size: 12px; color: var(--muted); margin-bottom: 28px; font-weight: 500; }
+.plan-features { list-style: none; padding: 0; margin-bottom: 28px; }
+.plan-features li {
+  padding: 10px 0; font-size: 13px; color: var(--text);
+  display: flex; align-items: flex-start; gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.plan-features li:last-child { border: none; }
+.plan-features li::before {
+  content: '✓'; color: var(--green); font-weight: bold;
+  background: rgba(16,185,129,.1); width: 20px; height: 20px;
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: 12px; flex-shrink: 0;
+}
+
+.faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.faq-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 28px; cursor: pointer;
+  transition: all .3s; box-shadow: var(--shadow-sm);
+}
+.faq-item:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+.faq-question {
+  font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700;
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 12px; color: var(--text);
+}
+.faq-question::after {
+  content: '+'; font-size: 28px; color: var(--accent); font-weight: 300;
+  transition: transform .3s;
+}
+.faq-item.open .faq-question::after { transform: rotate(45deg); }
+.faq-answer {
+  max-height: 0; overflow: hidden; transition: max-height .4s;
+  color: var(--text-soft); font-size: 14px; line-height: 1.7;
+}
+.faq-item.open .faq-answer { max-height: 400px; margin-top: 14px; }
+
+.testimonials-section { background: var(--surface2); }
+.testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.testimonial-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 32px; transition: all .3s;
+  box-shadow: var(--shadow-sm);
+}
+.testimonial-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+.testimonial-stars { color: var(--yellow); margin-bottom: 18px; font-size: 16px; letter-spacing: 2px; }
+.testimonial-text { font-size: 14px; color: var(--text); line-height: 1.75; margin-bottom: 24px; font-style: italic; }
+.testimonial-author { display: flex; align-items: center; gap: 14px; }
+.testimonial-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--gradient); display: flex; align-items: center;
+  justify-content: center; color: #fff; font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 17px;
+}
+.testimonial-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.testimonial-role { font-size: 11px; color: var(--muted); margin-top: 2px; font-weight: 500; }
+
+.cta-section {
+  padding: 120px 24px; text-align: center; position: relative; overflow: hidden;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F5F6FA 100%);
+}
+.cta-section::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, rgba(124,106,247,.1) 0%, transparent 70%);
+}
+.cta-container { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+.cta-container h2 {
+  font-family: 'Syne', sans-serif; font-size: 56px; font-weight: 800;
+  line-height: 1.1; margin-bottom: 24px; letter-spacing: -1.5px; color: var(--text);
+}
+.cta-container h2 .accent {
+  background: var(--gradient); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+}
+.cta-container p { font-size: 18px; color: var(--text-soft); margin-bottom: 40px; }
+.cta-features {
+  display: flex; justify-content: center; gap: 36px;
+  margin-top: 40px; flex-wrap: wrap;
+}
+.cta-feature {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: var(--text-soft); font-weight: 500;
+}
+.cta-feature::before {
+  content: '✓'; color: var(--green); font-weight: bold;
+  background: rgba(16,185,129,.12); width: 24px; height: 24px;
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: 13px;
+}
+
+.footer {
+  background: var(--text); color: #fff; padding: 72px 24px 32px;
+}
+.footer-container {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px;
+}
+.footer-brand h3 {
+  font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800;
+  background: var(--gradient); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 14px;
+}
+.footer-brand p { color: rgba(255,255,255,.6); font-size: 14px; line-height: 1.7; max-width: 340px; }
+.footer-col h4 {
+  font-family: 'Syne', sans-serif; font-size: 13px; text-transform: uppercase;
+  letter-spacing: 2px; color: var(--accent2); margin-bottom: 20px; font-weight: 700;
+}
+.footer-col a {
+  display: block; color: rgba(255,255,255,.6); text-decoration: none;
+  font-size: 13px; padding: 6px 0; transition: color .2s;
+}
+.footer-col a:hover { color: #fff; }
+.footer-bottom {
+  max-width: 1200px; margin: 56px auto 0; padding-top: 28px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; color: rgba(255,255,255,.5); flex-wrap: wrap; gap: 14px;
+}
+.footer-credits { text-align: right; line-height: 1.6; }
+.footer-credits strong { color: #fff; }
+
+@media (max-width: 900px) {
+  .hero-container, .persona-card { grid-template-columns: 1fr; }
+  .problem-grid, .benefits-grid, .steps-container, .testimonials-grid { grid-template-columns: 1fr; }
+  .plans-grid, .stats-grid { grid-template-columns: 1fr 1fr; }
+  .faq-grid { grid-template-columns: 1fr; }
+  .footer-container { grid-template-columns: 1fr 1fr; }
+  .hero h1 { font-size: 40px; }
+  .section-title, .cta-container h2 { font-size: 32px; }
+  .section { padding: 60px 20px; }
+  .nav-links { display: none; }
+  .mobile-menu { display: block; }
+  .steps-container::before { display: none; }
+  .plan-card.featured { transform: none; }
+  .persona-card { padding: 28px; }
+  .persona-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 500px) {
+  .plans-grid, .footer-container, .stats-grid { grid-template-columns: 1fr; }
+  .mockup-kpis { grid-template-columns: 1fr 1fr; }
+  .hero h1 { font-size: 34px; }
+  .cta-container h2 { font-size: 28px; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+  .footer-credits { text-align: center; }
+  .hero-trust { flex-direction: column; gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="logo">FINZO</div>
+    <div class="nav-links">
+      <a href="#problema">Problema</a>
+      <a href="#beneficios">Beneficios</a>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#planes">Planes</a>
+      <a href="#faq">FAQ</a>
+      <a href="app.html" class="btn">Probar ahora</a>
+    </div>
+    <button class="mobile-menu">☰</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-container">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        <span>100% PRIVADO · SIN NUBE · SIN REGISTRO</span>
+      </div>
+      <h1>Toma el control de <span class="highlight">tu dinero</span> sin ceder tus datos.</h1>
+      <p class="hero-subtitle">FINZO es una app web gratuita de finanzas personales para adultos colombianos. Funciona sin servidor, sin registro y sin acceso a tus cuentas bancarias. Tu información nunca sale de tu dispositivo.</p>
+      <div class="hero-ctas">
+        <a href="app.html" class="btn btn-lg">🚀 Probar FINZO gratis</a>
+        <a href="#como-funciona" class="btn btn-ghost btn-lg">Ver cómo funciona</a>
+      </div>
+      <div class="hero-trust">
+        <div class="trust-item">
+          <div class="trust-icon">🔒</div>
+          <div class="trust-text"><strong>100% privado</strong>Sin datos en la nube</div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon">⚡</div>
+          <div class="trust-text"><strong>Sin instalación</strong>Abre y usa</div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon">🇨🇴</div>
+          <div class="trust-text"><strong>Hecho en Colombia</strong>Para colombianos</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-mockup">
+      <div class="mockup-header">
+        <div class="mockup-title">Dashboard FINZO</div>
+        <div class="mockup-pills">
+          <span class="mockup-pill r"></span>
+          <span class="mockup-pill y"></span>
+          <span class="mockup-pill g"></span>
+        </div>
+      </div>
+      <div class="mockup-kpis">
+        <div class="mockup-kpi">
+          <div class="mockup-kpi-label">Ingresos</div>
+          <div class="mockup-kpi-value" style="color:var(--green)">$3.500.000</div>
+        </div>
+        <div class="mockup-kpi red">
+          <div class="mockup-kpi-label">Gastos</div>
+          <div class="mockup-kpi-value" style="color:var(--red)">$2.180.000</div>
+        </div>
+        <div class="mockup-kpi cyan">
+          <div class="mockup-kpi-label">Ahorros</div>
+          <div class="mockup-kpi-value" style="color:var(--accent2)">$450.000</div>
+        </div>
+        <div class="mockup-kpi purple">
+          <div class="mockup-kpi-label">Disponible</div>
+          <div class="mockup-kpi-value" style="color:var(--accent)">$1.320.000</div>
+        </div>
+      </div>
+      <div class="mockup-bars">
+        <div class="mockup-bar-row">
+          <div class="mockup-bar-label">Arriendo</div>
+          <div class="mockup-bar"><div class="mockup-bar-fill" style="width:85%;background:var(--accent)"></div></div>
+          <div class="mockup-bar-value">$800k</div>
+        </div>
+        <div class="mockup-bar-row">
+          <div class="mockup-bar-label">Mercado</div>
+          <div class="mockup-bar"><div class="mockup-bar-fill" style="width:55%;background:var(--accent2)"></div></div>
+          <div class="mockup-bar-value">$520k</div>
+        </div>
+        <div class="mockup-bar-row">
+          <div class="mockup-bar-label">Transporte</div>
+          <div class="mockup-bar"><div class="mockup-bar-fill" style="width:35%;background:var(--yellow)"></div></div>
+          <div class="mockup-bar-value">$330k</div>
+        </div>
+        <div class="mockup-bar-row">
+          <div class="mockup-bar-label">Ocio</div>
+          <div class="mockup-bar"><div class="mockup-bar-fill" style="width:20%;background:var(--red)"></div></div>
+          <div class="mockup-bar-value">$190k</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-big">43.3%</div>
+      <div class="stat-lbl">Colombianos con 3-5 deudas</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-big">66.3%</div>
+      <div class="stat-lbl">Afectados emocionalmente</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-big">$0</div>
+      <div class="stat-lbl">Costo de usar FINZO</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-big">100%</div>
+      <div class="stat-lbl">Privacidad garantizada</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="problema">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">El problema real</span>
+      <h2 class="section-title">El <span class="accent">43.3%</span> de los colombianos<br>vive con 3 a 5 deudas simultáneas.</h2>
+      <p class="section-subtitle">Y la mayoría no sabe en qué se le va la plata. El problema no es la falta de apps — es que ninguna respeta la privacidad del usuario. Las fintech actuales exigen acceso a cuentas bancarias y conexión permanente a la nube. El resultado: desconfianza, abandono y gente que vuelve al Excel o al papel.</p>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="problem-icon">😰</div>
+        <h3>Estrés financiero permanente</h3>
+        <p>Según Portafolio (2026), el 66.3% de los colombianos reporta que la presión económica afecta su salud mental. No saber en qué se va el dinero genera ansiedad diaria y afecta la calidad de vida.</p>
+        <span class="problem-stat">66.3% AFECTADOS</span>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">🔓</div>
+        <h3>Apps que piden demasiado</h3>
+        <p>Las apps tradicionales exigen datos bancarios, acceso a cuentas, correo electrónico y conexión constante. Muchos usuarios las instalan, las usan 2 días y las desinstalan por desconfianza.</p>
+        <span class="problem-stat">75% ABANDONO EN 7 DÍAS</span>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">📱</div>
+        <h3>Herramientas complicadas</h3>
+        <p>Excel es poderoso pero intimidante. Las apps bancarias son invasivas. Los cuadernos quedaron en el siglo pasado. Nadie ha diseñado algo simple, privado y gratis a la vez.</p>
+        <span class="problem-stat">0 SOLUCIONES PRIVADAS</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section benefits-section" id="beneficios">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">Beneficios únicos</span>
+      <h2 class="section-title">Por qué FINZO es <span class="accent">radicalmente diferente</span></h2>
+      <p class="section-subtitle">No es otra app de finanzas. Es un replanteamiento completo de cómo debe funcionar una herramienta financiera cuando la privacidad es ley, no un extra.</p>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon-wrap">🔒</div>
+        <h3>Privacidad total</h3>
+        <p>FINZO funciona en un único archivo HTML en tu navegador. No hay servidor, no hay base de datos central, no hay forma de que nadie vea tus finanzas.</p>
+        <ul class="benefit-list">
+          <li>Sin registro ni cuenta</li>
+          <li>Sin datos bancarios</li>
+          <li>Sin envío a la nube</li>
+          <li>Datos en LocalStorage</li>
+        </ul>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon-wrap">⚡</div>
+        <h3>Simplicidad extrema</h3>
+        <p>Registras un gasto en 3 segundos: monto, categoría, concepto. El dashboard se actualiza al instante con KPIs, gráficos y comparativos mensuales.</p>
+        <ul class="benefit-list">
+          <li>Registro en 3 segundos</li>
+          <li>Dashboard con 4 KPIs</li>
+          <li>Gráficos interactivos</li>
+          <li>Comparativo mes a mes</li>
+        </ul>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon-wrap">🆓</div>
+        <h3>Gratis para siempre</h3>
+        <p>La versión completa de FINZO es gratuita y lo seguirá siendo. Nuestro modelo se basa en planes opcionales — nunca en vender tus datos.</p>
+        <ul class="benefit-list">
+          <li>Sin anuncios publicitarios</li>
+          <li>Sin venta de datos personales</li>
+          <li>Sin suscripción obligatoria</li>
+          <li>Código abierto verificable</li>
+        </ul>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon-wrap">📊</div>
+        <h3>Decisiones informadas</h3>
+        <p>FINZO transforma tus datos en información accionable. Identifica tus gastos hormiga, proyecta tu flujo y te alerta antes de salirte del presupuesto.</p>
+        <ul class="benefit-list">
+          <li>Top 10 categorías de gasto</li>
+          <li>Flujo mensual con tendencia</li>
+          <li>Alertas configurables</li>
+          <li>Donut de distribución</li>
+        </ul>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon-wrap">🎯</div>
+        <h3>Metas gamificadas</h3>
+        <p>Define metas de ahorro con fecha límite, emoji y categoría vinculada. Visualiza tu progreso con barras animadas y celebra cuando las alcances.</p>
+        <ul class="benefit-list">
+          <li>Metas ilimitadas con emoji</li>
+          <li>Barra de progreso visual</li>
+          <li>Vinculación con ahorros reales</li>
+          <li>Días restantes calculados</li>
+        </ul>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon-wrap">🔁</div>
+        <h3>Gastos recurrentes</h3>
+        <p>Configura una vez los pagos que se repiten (arriendo, Netflix, pensión escolar) y FINZO te recuerda registrarlos. Un clic y quedan en tu historial.</p>
+        <ul class="benefit-list">
+          <li>Recordatorios automáticos</li>
+          <li>Registro con un clic</li>
+          <li>Visualización por día del mes</li>
+          <li>Categorización automática</li>
+        </ul>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon-wrap">💾</div>
+        <h3>Respaldo portable</h3>
+        <p>Exporta toda tu información en un archivo JSON. Si cambias de dispositivo, lo cargas y recuperas todo. Tus datos son tuyos y se mueven contigo.</p>
+        <ul class="benefit-list">
+          <li>Respaldo completo en JSON</li>
+          <li>Importación en cualquier equipo</li>
+          <li>Exportación a CSV y PDF</li>
+          <li>Sin dependencia de cuentas</li>
+        </ul>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon-wrap">📱</div>
+        <h3>Funciona en cualquier lugar</h3>
+        <p>FINZO corre en cualquier navegador moderno: Chrome, Safari, Firefox, Edge. En computador, tablet o celular. Sin instalación, sin actualizaciones molestas.</p>
+        <ul class="benefit-list">
+          <li>Compatible con todo navegador</li>
+          <li>Diseño responsive móvil</li>
+          <li>Funciona sin internet</li>
+          <li>Sin instalación requerida</li>
+        </ul>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon-wrap">🇨🇴</div>
+        <h3>Hecho para Colombia</h3>
+        <p>Formato en pesos colombianos, categorías locales (arriendo, cesantías, prima, SCALAS), terminología familiar y diseño para ritmos de pago quincenales.</p>
+        <ul class="benefit-list">
+          <li>Moneda en COP</li>
+          <li>Categorías típicas colombianas</li>
+          <li>Ciclos quincenales de ingresos</li>
+          <li>Pensado para empleados</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="como-funciona">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">3 pasos simples</span>
+      <h2 class="section-title">Empieza a controlar tus finanzas en <span class="accent">menos de 1 minuto</span></h2>
+      <p class="section-subtitle">Sin crear cuentas, sin descargar apps, sin conectar bancos. Solo abres FINZO y empiezas a usarlo.</p>
+    </div>
+    <div class="steps-container">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <h3>Abre FINZO en tu navegador</h3>
+        <p>Entras al enlace de FINZO. No hay instalación, no hay descarga, no hay registro. La app se carga en 2 segundos y ya estás dentro. Funciona en computador, tablet y celular.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <h3>Registra tus movimientos</h3>
+        <p>Cada vez que ganes o gastes algo, en 3 segundos lo registras: monto, tipo (ingreso, gasto fijo, variable o ahorro), categoría y concepto. Todo queda en tu navegador.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <h3>Decide con datos reales</h3>
+        <p>El dashboard te muestra en tiempo real cuánto has ganado, gastado y ahorrado. Identifica tus fugas, define metas, programa alertas y recupera el control de tu dinero.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section persona-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">Para quién es FINZO</span>
+      <h2 class="section-title">Conoce a <span class="accent">Camila Restrepo</span></h2>
+      <p class="section-subtitle">Nuestra usuaria ideal. Si te identificas con ella, FINZO fue diseñado pensando en ti.</p>
+    </div>
+    <div class="persona-card">
+      <div class="persona-visual">
+        <div class="persona-avatar">👩🏻</div>
+        <h3>Camila Restrepo</h3>
+        <div class="age">32 años · Bogotá</div>
+        <div class="persona-quote">"Yo gano bien, pero no sé en qué se me va la plata. Cada mes es lo mismo: llego a fin de mes y no entiendo qué pasó."</div>
+      </div>
+      <div class="persona-info">
+        <h3>Asistente administrativa</h3>
+        <div class="role">Soltera · Un hijo · Ingresos $2.5M COP/mes</div>
+        <p style="color:var(--text-soft);font-size:14px;line-height:1.7">Camila es una mujer trabajadora, con responsabilidades familiares y presión financiera constante. Quiere tomar el control de sus finanzas pero las apps tradicionales la intimidan y le generan desconfianza por pedirle acceso a sus cuentas bancarias.</p>
+        <div class="persona-grid">
+          <div class="persona-block">
+            <h4>🎯 Objetivos</h4>
+            <p>Ahorrar para la universidad de su hijo. Pagar sus deudas. Sentir tranquilidad financiera.</p>
+          </div>
+          <div class="persona-block">
+            <h4>😰 Frustraciones</h4>
+            <p>No saber en qué gasta. Olvidar fechas de pago. Desconfiar de apps que piden datos bancarios.</p>
+          </div>
+          <div class="persona-block">
+            <h4>💡 Intereses</h4>
+            <p>Educación financiera. Emprendimiento. Tiempo de calidad con su hijo. Bienestar personal.</p>
+          </div>
+          <div class="persona-block">
+            <h4>📱 Comportamiento</h4>
+            <p>Usa el celular todo el día. Prefiere apps simples. Lee contenido educativo en redes sociales.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">Comparativo honesto</span>
+      <h2 class="section-title">FINZO vs <span class="accent">apps tradicionales</span></h2>
+      <p class="section-subtitle">No somos mejores en todo. Somos mejores en lo que importa: tu privacidad, tu simplicidad y tu bolsillo.</p>
+    </div>
+    <div class="compare-table">
+      <div class="compare-row header">
+        <div class="compare-feature">Característica</div>
+        <div class="compare-header-finzo">FINZO</div>
+        <div class="compare-header-other">Apps tradicionales</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-feature">Precio para empezar</div>
+        <div class="compare-value compare-finzo">$0 — Gratis</div>
+        <div class="compare-value compare-other">$9.900 - $20.000/mes</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-feature">Requiere registro</div>
+        <div class="compare-value compare-finzo">✗ No</div>
+        <div class="compare-value compare-other">✓ Sí (email, teléfono)</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-feature">Pide acceso a cuentas bancarias</div>
+        <div class="compare-value compare-finzo">✗ Nunca</div>
+        <div class="compare-value compare-other">✓ Sí (obligatorio)</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-feature">Tus datos salen de tu dispositivo</div>
+        <div class="compare-value compare-finzo">✗ No</div>
+        <div class="compare-value compare-other">✓ Sí (a sus servidores)</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-feature">Funciona sin internet</div>
+        <div class="compare-value compare-finzo">✓ Sí</div>
+        <div class="compare-value compare-other">✗ No</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-feature">Instalación requerida</div>
+        <div class="compare-value compare-finzo">✗ No</div>
+        <div class="compare-value compare-other">✓ Sí</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-feature">Anuncios publicitarios</div>
+        <div class="compare-value compare-finzo">✗ No</div>
+        <div class="compare-value compare-other">✓ Sí</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-feature">Respaldo portable (JSON)</div>
+        <div class="compare-value compare-finzo">✓ Sí</div>
+        <div class="compare-value compare-other">✗ No</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-feature">Categorías colombianas</div>
+        <div class="compare-value compare-finzo">✓ Sí</div>
+        <div class="compare-value compare-other">△ Parcial</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-feature">Tiempo para registrar un gasto</div>
+        <div class="compare-value compare-finzo">3 segundos</div>
+        <div class="compare-value compare-other">15-30 segundos</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section benefits-section" id="planes">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">Modelo freemium</span>
+      <h2 class="section-title">Empieza gratis. <span class="accent">Crece a tu ritmo.</span></h2>
+      <p class="section-subtitle">La versión básica es gratis para siempre. Si en algún momento necesitas más potencia o quieres apoyar el proyecto, tienes opciones diseñadas para cada etapa de tu vida financiera.</p>
+    </div>
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-tag">Básico</div>
+        <div class="plan-name">FINZO Free</div>
+        <div class="plan-desc">La versión completa, gratis para siempre.</div>
+        <div class="plan-price free">$0</div>
+        <div class="plan-period">Siempre gratis</div>
+        <ul class="plan-features">
+          <li>Dashboard con 4 KPIs</li>
+          <li>Registros ilimitados</li>
+          <li>Hasta 10 categorías</li>
+          <li>Metas de ahorro ilimitadas</li>
+          <li>Alertas de presupuesto</li>
+          <li>Flujo mensual con gráficos</li>
+          <li>Respaldo JSON exportable</li>
+          <li>Funciona offline</li>
+        </ul>
+        <a href="app.html" class="btn" style="width:100%;text-align:center">Empezar gratis</a>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-tag">Individual</div>
+        <div class="plan-name">FINZO Pro</div>
+        <div class="plan-desc">Para quienes quieren más potencia y sincronización.</div>
+        <div class="plan-price">$17.900</div>
+        <div class="plan-period">COP / mes</div>
+        <ul class="plan-features">
+          <li>Todo lo del plan Free</li>
+          <li>Sincronización P2P cifrada</li>
+          <li>Categorías ilimitadas</li>
+          <li>Importación de CSV</li>
+          <li>Exportación PDF ilimitada</li>
+          <li>Respaldos automáticos</li>
+          <li>Modo oscuro premium</li>
+          <li>Soporte prioritario</li>
+        </ul>
+        <a href="app.html" class="btn" style="width:100%;text-align:center">Probar Pro</a>
+      </div>
+      <div class="plan-card">
+        <div class="plan-tag">Familiar</div>
+        <div class="plan-name">FINZO Familia</div>
+        <div class="plan-desc">Hasta 5 perfiles + educación financiera.</div>
+        <div class="plan-price">$34.900</div>
+        <div class="plan-period">COP / mes</div>
+        <ul class="plan-features">
+          <li>Todo lo del plan Pro</li>
+          <li>Hasta 5 perfiles familiares</li>
+          <li>Metas compartidas</li>
+          <li>Control parental</li>
+          <li>60+ lecciones educativas</li>
+          <li>Simuladores de crédito</li>
+          <li>Certificado digital</li>
+          <li>Reportes familiares</li>
+        </ul>
+        <a href="#" class="btn btn-ghost" style="width:100%;text-align:center">Próximamente</a>
+      </div>
+      <div class="plan-card">
+        <div class="plan-tag">Empresarial</div>
+        <div class="plan-name">FINZO Empresas</div>
+        <div class="plan-desc">Bienestar financiero para tu equipo.</div>
+        <div class="plan-price">$12.000</div>
+        <div class="plan-period">COP / empleado / mes</div>
+        <ul class="plan-features">
+          <li>Panel administrativo anónimo</li>
+          <li>Reportes agregados</li>
+          <li>Talleres mensuales (3h)</li>
+          <li>Landing personalizada</li>
+          <li>Soporte WhatsApp dedicado</li>
+          <li>Integración con nómina</li>
+          <li>Convenios cajas de compensación</li>
+          <li>Mínimo 50 empleados</li>
+        </ul>
+        <a href="#" class="btn btn-ghost" style="width:100%;text-align:center">Contáctanos</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section testimonials-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">Lo que dicen de FINZO</span>
+      <h2 class="section-title">Historias de <span class="accent">usuarios reales</span></h2>
+      <p class="section-subtitle">Testimonios de nuestra fase de validación beta con usuarios colombianos.</p>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <div class="testimonial-text">"Llevaba años probando apps de finanzas y las abandonaba todas. FINZO es la primera que uso hace 3 meses seguidos. No pide nada, funciona rápido y veo exactamente dónde se me va la plata."</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">CR</div>
+          <div>
+            <div class="testimonial-name">Camila R.</div>
+            <div class="testimonial-role">Asistente admin · Bogotá</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <div class="testimonial-text">"Soy ingeniero y desconfiaba de meter mis datos bancarios en cualquier app. FINZO resolvió eso: nada sale de mi computador. Puedo auditar el código yo mismo. Es simplemente brillante."</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">JV</div>
+          <div>
+            <div class="testimonial-name">Jorge V.</div>
+            <div class="testimonial-role">Ingeniero · Medellín</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <div class="testimonial-text">"Mi hijo de 15 años también la usa para manejar su mesada. Es tan simple que la configuramos en 5 minutos. Y como papás estamos tranquilos porque no hay datos en la nube."</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">MG</div>
+          <div>
+            <div class="testimonial-name">María G.</div>
+            <div class="testimonial-role">Profesora · Villavicencio</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">Preguntas frecuentes</span>
+      <h2 class="section-title">Todo lo que necesitas saber<br>antes de <span class="accent">empezar</span></h2>
+    </div>
+    <div class="faq-grid">
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-question">¿Realmente es gratis?</div>
+        <div class="faq-answer">Sí, la versión completa es 100% gratis para siempre. No hay límites de uso, ni anuncios, ni ventana de prueba. Los planes de pago son opcionales y suman valor adicional (sincronización, educación, perfiles familiares).</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-question">¿Dónde se guardan mis datos?</div>
+        <div class="faq-answer">Exclusivamente en tu navegador, usando la tecnología LocalStorage. Nunca se envían a ningún servidor. Si borras los datos del navegador, pierdes la información — por eso recomendamos exportar un respaldo JSON periódicamente.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-question">¿Qué pasa si cambio de celular?</div>
+        <div class="faq-answer">Debes exportar un respaldo JSON desde el celular viejo, enviártelo por correo o WhatsApp, abrir FINZO en el celular nuevo y cargar el respaldo. Toda tu información se recupera intacta.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-question">¿Funciona sin internet?</div>
+        <div class="faq-answer">Sí. Una vez cargada la página, FINZO funciona completamente offline. Solo necesitas internet la primera vez para abrir el enlace. Después puedes usarla en el bus, en el campo, en un avión.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-question">¿Cómo gana dinero FINZO si es gratis?</div>
+        <div class="faq-answer">Con los planes opcionales Pro, Familia y Empresas. También estamos desarrollando FINZO Academia (cursos de educación financiera) y FINZO Marca Blanca (licencias para cajas de compensación). Nunca vendemos tus datos.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-question">¿Mis datos están seguros?</div>
+        <div class="faq-answer">Más seguros que en cualquier app bancaria. Como no viajan por internet y no están en ningún servidor, ningún hacker puede robarlos. La única forma de perderlos es que alguien tenga acceso físico a tu dispositivo.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-question">¿Puedo conectar mis cuentas bancarias?</div>
+        <div class="faq-answer">No, y es intencional. Esa es la principal diferencia con otras apps. FINZO nunca pedirá acceso a tus cuentas bancarias. Tú ingresas manualmente tus movimientos — toma 3 segundos — y a cambio tienes 100% de privacidad.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-question">¿Está disponible en otros países?</div>
+        <div class="faq-answer">Actualmente la versión está optimizada para Colombia (pesos, categorías locales). Estamos trabajando en versiones para Perú, Ecuador y México, con fecha estimada de lanzamiento en 2027.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-container">
+    <h2>Toma el control de tu dinero.<br><span class="accent">Hoy mismo. Sin excusas.</span></h2>
+    <p>FINZO está listo para que empieces. No hay que descargar nada, no hay que crear cuentas, no hay riesgos. Un clic y estás dentro.</p>
+    <a href="app.html" class="btn btn-xl">🚀 Abrir FINZO ahora</a>
+    <div class="cta-features">
+      <div class="cta-feature">100% gratis</div>
+      <div class="cta-feature">Sin registro</div>
+      <div class="cta-feature">Sin instalación</div>
+      <div class="cta-feature">Sin datos bancarios</div>
+      <div class="cta-feature">Funciona offline</div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-brand">
+      <h3>FINZO</h3>
+      <p>App web gratuita de finanzas personales. Sin nube, sin registro, sin ceder tus datos. Diseñada para colombianos que quieren tomar el control de su dinero sin sacrificar su privacidad.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Producto</h4>
+      <a href="#beneficios">Beneficios</a>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#planes">Planes</a>
+      <a href="app.html">Probar FINZO</a>
+    </div>
+    <div class="footer-col">
+      <h4>Empresa</h4>
+      <a href="#problema">El problema</a>
+      <a href="#faq">FAQ</a>
+      <a href="#">Blog (próximo)</a>
+      <a href="#">Prensa</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="#">Política de privacidad</a>
+      <a href="#">Términos de uso</a>
+      <a href="#">Código de conducta</a>
+      <a href="#">Contacto</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2026 FINZO. Hecho con 💜 en Colombia.</div>
+    <div class="footer-credits">
+      Proyecto académico · <strong>Juan Pablo Vargas Sánchez</strong><br>
+      Ingeniería de Sistemas · CUN · Espíritu Emprendedor
+    </div>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', function(e) {
+    const href = this.getAttribute('href');
+    if (href === '#') return;
+    e.preventDefault();
+    const target = document.querySelector(href);
+    if (target) window.scrollTo({ top: target.offsetTop - 70, behavior: 'smooth' });
+  });
+});
+
+document.querySelector('.mobile-menu').addEventListener('click', function() {
+  const nav = document.querySelector('.nav-links');
+  nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex';
+});
+</script>
+
+</body>
+</html>
